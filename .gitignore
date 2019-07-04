@@ -1,0 +1,7 @@
+# Data Directory
+images/
+videos/
+*.json
+*.docx
+*.hwp
+*.txt
