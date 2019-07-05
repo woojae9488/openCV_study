@@ -1,0 +1,227 @@
+####################################################################################################
+
+& document standard &
+
+- 문서의 서식
+    한 문서의 시작과 끝 = # * 100
+    한 문서의 제목 = \n& 제목 &\n
+    문단 사이의 구분 = \n
+    내용의 순서 = [-] -> [ ] -> {=>} -> [#] -> {-} -> [ ] -> {:}
+    내용의 끝 = \n\n
+
+- openCV 활용 준비
+    파이썬 다운로드 => https://www.python.org
+    openCV 관련 필요 모듈들 다운로드
+        # https://www.lfd.uci.edu/~gohlke/pythonlibs/
+        # OpenCV_Python, OpenCV_Python_Contrib, Numpy, Matplotlib
+    pip install을 이용해 모듈들을 설치
+    import cv2, import numpy, import matplotlib를 이용해 에러 확인
+
+
+####################################################################################################
+
+& openCV method & (import cv2)
+
+- 이미지 읽어들이기
+    메소드 원형 => cv2.imread('이미지 경로', MODE) [이미지객체]
+    MODE 종류
+        # cv2.IMREAD_COLOR(default) - 컬러 이미지로 로드 / 정수값 1
+        # cv2.IMREAD_GRAYSCALE - 흑백 이미지로 로드 / 정수값 0
+        # cv2.IMREAD_UNCHANGED - 알파 채널 포함해 이미지 그대로 로드 / 정수값 -1
+
+- 이미지 화면에 띄우기
+    메소드 원형 => cv2.imshow('윈도우이름', 이미지객체)
+
+- 사용자의 키보드 입력 대기
+    메소드 원형 => cv2.waitKey(MSEC) [입력 키보드값(32bit)]
+    MSEC => 지정된 ms동안 키보드 입력을 대기 / 0이면 무한 대기
+    64bit OS일 때의 반환값 얻기 => 반환값 & 0xFF
+    문자의 아스키 코드값 얻기 => ord('문자')
+    아스키 코드값의 문자 얻기 => chr(ASCII)
+
+- 생성한 화면 모두 제거
+    메소드 원형 => cv2.destroyAllWindows()
+
+- 크기를 변경시킬 수 있는 창 지정
+    메소드 원형 => cv2.namedWindow('윈도우이름', MODE)
+    MODE 종류
+        # cv2.WINDOW_AUTOSIZE(default) - 원본 이미지 크기로 고정해 생성
+        # cv2.WINDOW_NORMAL - 사용자가 크기 조절 가능하도록 생성
+    창 지정 후에는 꼭 cv2.imshow를 해줘야지 생성된다.
+
+- 이미지를 저장하기
+    메소드 원형 => cv2.imwrite('저장경로', 이미지객체)
+
+- 동영상 읽어들이기
+    메소드 원형 => cv2.VideoCapture('동영상 경로' | CAM) [동영상객체]
+    CAM => 장치에 달린 카메라의 번호 (0 ~)
+    cv2.VideoCapture 사용 시에는 try except 구문으로 묶어줘야 한다.
+    읽어들이기 성공 확인 => 동영상객체.isOpened() [성공플래그]
+    동영상 종료하기 => 동영상객체.release()
+
+- 동영상의 프레임 얻기
+    메소드 원형 => 동영상객체.read() [성공플래그, 이미지객체(프레임)]
+
+- 이미지 색상 변경
+    메소드 원형 => cv2.cvtColor(이미지객체, MODE)
+    MODE 종류
+        # cv2.COLOR_BGR2GRAY - BGR이미지를 흑백으로 변환
+        # cv2.COLOR_BGR2HSV - BGR이미지를 HSV이미지로 변환
+
+- 동영상 관련 속성값 얻기 및 바꾸기
+    메소드 원형 => 동영상객체.get(PROP) [지정값] / 동영상객체.set(PROP, 지정값)
+    PROP 종류
+        # CV_CAP_PROP_POS_MSEC - 동영상의 현재 위치를 ms단위로 반환
+        # CV_CAP_PROP_POS_FRAMES - 동영상의 다음 프레임의 인덱스를 반환
+        # CV_CAP_PROP_POS_AVI_RATIO - 동영상의 상대적 위치를 반환 (0 ~ 1)
+        # CV_CAP_PROP_FRAME_WIDTH - 동영상 프레임의 너비를 반환
+        # CV_CAP_PROP_FRAME_HEIGHT - 동영상 프레임의 높이를 반환
+        # CV_CAP_PROP_FPS - 동영상의 FPS를 반환
+        # CV_CAP_PROP_FOURCC - 동영상 코덱을 길이 4의 문자로 반환
+        # CV_CAP_PROP_FRAME_COUNT - 동영상의 전체 프레임 개수를 반환
+
+- 동영상 저장할 객체 생성
+    메소드 원형 => cv2.VideoWriter('저장경로', 코덱객체, FPS, (너비, 높이)) [동영상저장객체]
+    코덱객체 얻기 => cv2.VideoWriter_fourcc('문자1', '문자2', '문자3', '문자4') [코덱객체]
+    코덱 종류 => DIVX, XVID, MJPG, X264, WMV1, WMV2
+    FPS => fps를 double형으로 지정
+
+- 동영상 저장하기
+    메소드 원형 => 동영상저장객체.write(이미지객체)
+    저장 마치기 => 동영상저장객체.release()
+
+- 이미지 상하 반전하기
+    메소드 원형 => cv2.flip(이미지객체, 0) [이미지객체]
+
+- 여러가지 도형 그리기
+    선 그리기 => cv2.line(이미지객체, 시작점, 끝점, 색상, 굵기)
+    사각형 그리기 => cv2.rectangle(이미지객체, 시작점, 끝점, 색상, 굵기)
+    원 그리기 => cv2.circle(이미지객체, 중심점, 반지름, 색상, 굵기)
+    타원 그리기 => cv2.ellipse(이미지객체, 중심점, 장단축, 기울기, 시작각, 끝각, 색상, 굵기)
+    문장 그리기 => cv2.putText(이미지객체, '문장', 시작점, 폰트, 폰트크기, 색상, 굵기)
+    인자들 중 튜플 형식 => 점(X, Y), 색상(B, G, R), 장단축(장, 단)
+    폰트 => cv2.FONT_HERSHEY_SIMPLEX
+    굵기 => int형으로 지정하며 -1일 경우 주어진 색상으로 도형을 채운다.
+
+- 마우스 이벤트 처리하기
+    메소드 원형 => cv2.setMouseCallback('윈도우이름', 이벤트처리함수, param=이미지객체)
+    이벤트 처리 함수
+        # 이벤트처리함수(event, x, y, flags, param)
+        # 이벤트 종류
+            cv2.EVENT_LBUTTONDBLCLK : 왼쪽 마우스 더블클릭
+            cv2.EVENT_LBUTTONDOWN : 왼쪽 마우스 누름
+            cv2.EVENT_MOUSEMOVE : 마우스 이동
+            cv2.EVENT_LBUTTONUP : 왼쪽 마우스 누름 해제
+        # param - cv2.setMouseCallback에서 전달받은 사용자 데이터
+
+- 트랙바 생성
+    메소드 원형 => cv2.createTrackbar('트랙바이름', '윈도우이름', 시작값, 끝값, 처리함수)
+    윈도우이름은 먼저 cv2.namedWindow로 만든 후 사용해야 한다.
+
+- 트랙바의 값을 얻기
+    메소드 원형 => cv2.getTrackbarPos('트랙바이름', '윈도우이름') [지정값]
+
+- 이미지 채널 분할하기
+    메소드 원형 => cv2.split(이미지객체) [B채널, G채널, R채널]
+    반환값(이미지의 채널값)들은 모두 1채널 값이므로 흑백 이미지로 표시된다.
+
+- 이미지 채널 병합하기
+    메소드 원형 => cv2.merge((B채널, G채널, R채널)) [이미지객체]
+
+- 서로 다른 이미지 합치기
+    메소드 원형 => cv2.add(이미지객체1, 이미지객체2) [병합이미지객체]
+    각 픽셀 더한 값이 255보다 크면 255가 픽셀값이 된다.
+
+- 서로 다른 이미지 블렌딩하기
+    메소드 원형 => cv2.addWeighted(이미지객체1, 1-알파값, 이미지객체2, 알파값, 0)
+    블렌딩 공식 => h(x) = (1 - a)f(x) + ag(x)
+    알파값은 1이하의 소수값이여야 한다.
+
+- 이미지 비트 연산하기
+    AND 연산 => cv2.bitwise_and(이미지객체1, 이미지객체2, mask=마스크객체)
+    mask의 값이 0이 아닌 부분만 이미지객체들을 가지고 연산한다.
+    mask는 1채널 값이어야 하므로 대부분 흑백 이미지이다.
+
+- 이미지의 특정 색상만 추출할 마스크 생성
+    메소드 원형 => cv2.inRange(HSV이미지객체, 범위하한, 범위상한) [마스크객체]
+    HSV이미지객체는 cv2.cvtColor를 사용하여 생성한다.
+    범위는 np.array를 사용하여 생성한다.
+    범위 안에 해당하는 값은 그대로 두고 나머지 부분은 0으로 채운 마스크를 만든다.
+
+- 이미지에 전역 thresholding(문턱) 지정하기
+    메소드 원형 => cv2.threshold(이미지객체, 문턱값, 적용값, MODE) [성공플래그, 이미지객체]
+    MODE 종류
+        # cv2.THRESH_BINARY - 값이 문턱값보다 크면 적용값, 작으면 0
+        # cv2.THRESH_BINARY_INV - 값이 문턱값보다 크면 0, 작으면 적용값
+        # cv2.THRESH_TRUNC - 값이 문턱값보다 크면 문턱값, 작으면 그대로
+        # cv2.THRESH_TOERO - 값이 문턱값보다 크면 그대로, 작으면 0
+        # cv2.THRESH_TOZERO_INV - 값이 문턱값보다 크면 0, 작으면 그대로
+    thresholding을 적용하려면 grayscale 이미지로 변환한 후 적용해야 한다.
+
+- 이미지에 적응 thresholding 지정하기
+    메소드 원형 => cv2.adaptiveThreshold(이미지객체, 적용값, METHOD, MODE, SIZE, C) [이미지객체]
+    METHOD 종류
+        # cv2.ADAPTIVE_THRESH_MEAN_C
+            적용 픽셀을 중심으로 하는 SIZE * SIZE 안의 픽셀값 평균에서 C를 뺀 값이 문턱값
+        # cv2.ADAPTIVE_THRESH_GAUSSIAN_C
+            SIZE * SIZE 안의 gaussian 윈도우 기반 가중치들의 합에서 C를 뺀 값이 문턱값
+    MODE 종류 => cv2.threshold와 똑같다.
+    SIZE => 픽셀에 적용할 문턱값을 계산하기 위한 블럭의 크기이다. / 적용 픽셀이 중심이 된다.
+    C => 보정 상수로 양수이면 계산된 문턱값에서 빼고 음수이면 더해준다.
+    cv2.threshold와 차이점 => 이미지 부분들의 광원 조건에 따라 이미지 프로세싱이 가능하다.
+
+
+####################################################################################################
+
+& numpy method & (import numpy as np)
+
+- 도형을 그리기 위한 이미지객체 만들기
+    메소드 원형 => np.zeros((너비, 높이, 3), np.uint8) [이미지객체]
+    너비 * 높이의 검정색 이미지를 얻을 수 있다.
+
+- 이미지의 픽셀값을 얻기
+    메소드 원형 => 이미지객체.item(세로, 가로, BGR) [지정값]
+    BGR => B값 - 0 / G값 - 1 / R값 - 2
+    이미지객체[세로, 가로]를 이용해 한 번에 얻을 수도 있다.
+    픽셀값 변경하기 => 이미지객체.itemset((세로, 가로, BGR), 지정값)
+
+- 이미지의 다양한 속성 얻기
+    이미지 해상도 및 컬러 채널 => img.shape [높이, 너비, 컬러채널수]
+    이미지 바이트 사이즈 => img.size 
+    이미지 데이터 타입 => img.dtype
+
+- 이미지 ROI(Region Of Image) 설정
+    ROI 설정 => ROI이미지객체 = 이미지객체[세로시작:세로끝, 가로시작:가로끝]
+    ROI 이미지에 삽입 => 이미지객체[세로시작:세로끝, 가로시작:가로끝] = ROI이미지객체
+
+- 이미지 채널 분할하기
+    BGR채널 = 이미지객체[:, :, BGR]
+    BGR => B값 - 0 / G값 - 1 / R값 - 2
+
+- 서로 다른 이미지 합치기
+    병합이미지객체 = 이미지객체1 + 이미지객체2
+    각 픽셀 더한 값이 255보다 크면 256으로 나눈 나머지가 픽셀값이 된다.
+
+- 픽셀 1개에 해당하는 값 만들기
+    uint8형으로 생성 => np.unit8([[[B값, G값, R값]]])
+    array형으로 생성 => np.array([B값, G값, R값])
+
+
+####################################################################################################
+
+& matplotlib method & (import matplotlib.pyplot as plt)
+
+- 이미지를 플로팅 화면에 띄우기
+    메소드 원형 => plt.imshow(이미지객체, cmap='gray', interpolation='bicubic')
+    OpenCV는 BGR로 색상 표현하지만 Matplotlib는 RGB로 색상 표현한다.
+    따라서 이미지 객체 생성 시 cv2.IMREAD_GRAYSCALE를 사용해야 한다.
+
+- 플로팅 화면의 눈금 표시
+    메소드 원형 => plt.xticks([]) / plt.yticks([])
+    빈 배열을 줌으로써 눈금 없이 표시할 수 있다.
+
+- 플로팅 화면의 타이틀 설정 및 띄우기
+    메소드 원형 => plt.title('윈도우이름') / plt.show()
+
+
+####################################################################################################
