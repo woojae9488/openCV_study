@@ -71,14 +71,14 @@
 - 동영상 관련 속성값 얻기 및 바꾸기
     메소드 원형 => 동영상객체.get(PROP) [지정값] / 동영상객체.set(PROP, 지정값)
     PROP 종류
-        # CV_CAP_PROP_POS_MSEC - 동영상의 현재 위치를 ms단위로 반환
-        # CV_CAP_PROP_POS_FRAMES - 동영상의 다음 프레임의 인덱스를 반환
-        # CV_CAP_PROP_POS_AVI_RATIO - 동영상의 상대적 위치를 반환 (0 ~ 1)
-        # CV_CAP_PROP_FRAME_WIDTH - 동영상 프레임의 너비를 반환
-        # CV_CAP_PROP_FRAME_HEIGHT - 동영상 프레임의 높이를 반환
-        # CV_CAP_PROP_FPS - 동영상의 FPS를 반환
-        # CV_CAP_PROP_FOURCC - 동영상 코덱을 길이 4의 문자로 반환
-        # CV_CAP_PROP_FRAME_COUNT - 동영상의 전체 프레임 개수를 반환
+        # cv2.CV_CAP_PROP_POS_MSEC(0) - 동영상의 현재 위치를 ms단위로 반환
+        # cv2.CV_CAP_PROP_POS_FRAMES(1) - 동영상의 다음 프레임의 인덱스를 반환
+        # cv2.CV_CAP_PROP_POS_AVI_RATIO(2) - 동영상의 상대적 위치를 반환 (0 ~ 1)
+        # cv2.CV_CAP_PROP_FRAME_WIDTH(3) - 동영상 프레임의 너비를 반환
+        # cv2.CV_CAP_PROP_FRAME_HEIGHT(4) - 동영상 프레임의 높이를 반환
+        # cv2.CV_CAP_PROP_FPS(5) - 동영상의 FPS를 반환
+        # cv2.CV_CAP_PROP_FOURCC(6) - 동영상 코덱을 길이 4의 문자로 반환
+        # cv2.CV_CAP_PROP_FRAME_COUNT(7) - 동영상의 전체 프레임 개수를 반환
 
 - 동영상 저장할 객체 생성
     메소드 원형 => cv2.VideoWriter('저장경로', 코덱객체, FPS, (너비, 높이)) [동영상저장객체]
@@ -149,7 +149,7 @@
     범위 안에 해당하는 값은 그대로 두고 나머지 부분은 0으로 채운 마스크를 만든다.
 
 - 이미지에 전역 thresholding(문턱) 지정하기
-    메소드 원형 => cv2.threshold(이미지객체, 문턱값, 적용값, MODE) [성공플래그, 이미지객체]
+    메소드 원형 => cv2.threshold(이미지객체, 문턱값, 적용값, MODE) [문턱값, 이미지객체]
     MODE 종류
         # cv2.THRESH_BINARY - 값이 문턱값보다 크면 적용값, 작으면 0
         # cv2.THRESH_BINARY_INV - 값이 문턱값보다 크면 0, 작으면 적용값
@@ -169,6 +169,49 @@
     SIZE => 픽셀에 적용할 문턱값을 계산하기 위한 블럭의 크기이다. / 적용 픽셀이 중심이 된다.
     C => 보정 상수로 양수이면 계산된 문턱값에서 빼고 음수이면 더해준다.
     cv2.threshold와 차이점 => 이미지 부분들의 광원 조건에 따라 이미지 프로세싱이 가능하다.
+
+- 이미지에 Otsu's Binarization으로 thresholding 지정하기
+    cv2.threshold에서 MODE값에 cv2.THRESH_OTSU를 더해주고 문턱값을 0으로 전달한다.
+    cv2.threshold가 적적할 문턱값을 계산한 후 이를 적용해 결과를 준다.
+    bimodal 이미지에 cv2.GaussianBlur를 사용하면 더 정확한 문턱값을 구해낼 수 있다.
+
+- 이미지의 크기를 변환하기
+    메소드 원형 => cv2.resize(이미지객체, DSIZE, fx=FX, fy=FY, interpolation=MODE) [이미지객체]
+    DSIZE => dsize를 나타내는 튜플값(가로픽셀수, 세로픽셀수) / 대부분 None으로 설정
+    FX, FY => 가로방향, 세로방향의 배율 인자를 double형으로 지정
+    MODE 종류 (보간법)
+        # cv2.INTER_NEAREST - nearest neighbor interpolation
+        # cv2.INTER_LINEAR(default) - bilinear interpolation
+        # cv2.INTER_AREA - 이미지 축소에서 선호되는 방법 / 확대에서는 cv2.INTER_NEAREST와 비슷
+        # cv2.INTER_CUBIC - 4 * 4 픽셀에 적용되는 bicubic interpolation
+        # cv2.INTER_LANCZOS4 - 8 * 8 픽셀에 적용되는 lanczos interpolation
+    일반적으로 축소 시에는 cv2.INTER_AREA, 확대 시에는 cv2.INTER_CUBIC+cv2.INTER_LINEAR 사용
+
+- 이미지에 행렬연산 수행하기
+    메소드 원형 => cv2.warpAffine(이미지객체, 변환행렬, 출력크기) [이미지객체]
+    변환행렬 => np.float32를 사용해 생성한다.
+    출력크기 => (너비, 높이) 형식의 튜플 인자
+
+- 이미지 회전 변환행렬 얻기
+    메소드 원형 => cv2.getRotationMatrix2D(무게중심, 회전각, 크기배율) [변환행렬]
+    무게중심 => (가로, 세로) 형식의 튜플 인자 / 대부분 (w/2, h/2)를 사용
+    회전각만큼 반시계방향으로 회전하게 해주는 변환행렬을 얻을 수 있다.
+    만들어진 변환행렬로 cv2.warpAffine을 사용해 회전된 이미지를 얻어낼 수 있다.
+
+- 3개의 점을 이용해 이미지 원근 변환행렬 얻기
+    메소드 원형 => cv2.getAffineTransform(전점행렬, 후점행렬) [변환행렬]
+    점행렬 => np.float32를 사용해 생성한다.
+    만들어진 변환행렬로 cv2.warpAffine을 사용해 보정된 이미지를 얻어낼 수 있다.
+
+- 4개의 점을 이용해 이미지 원근 변환행렬 얻기
+    메소드 원형 => cv2.getPerspectiveTransform(전점행렬, 후점행렬) [변환행렬]
+    점행렬 => np.float32를 사용해 생성한다.
+    만들어진 변환행렬로 cv2.warpPerspective을 사용해 보정된 이미지를 얻어낼 수 있다.
+
+- 4개의 점으로 이미지 원근 보정하기
+    메소드 원형 => cv2.warpPerspective(이미지객체, 변환행렬, 출력크기) [이미지객체]
+    변환행렬 => cv2.getPerspectiveTransform을 사용해 생성한다.
+    출력크기 => (너비, 높이) 형식의 튜플 인자
 
 
 ####################################################################################################
@@ -206,6 +249,9 @@
     uint8형으로 생성 => np.unit8([[[B값, G값, R값]]])
     array형으로 생성 => np.array([B값, G값, R값])
 
+- 행렬 만들기
+    이동 변환행렬 생성 => np.float32([[1, 0, X이동], [0, 1, Y이동]])
+    원근 점행렬 생성 => np.float32([[X1, Y1], [X2, Y2], ..., [Xn, Yn]])
 
 ####################################################################################################
 
@@ -222,6 +268,11 @@
 
 - 플로팅 화면의 타이틀 설정 및 띄우기
     메소드 원형 => plt.title('윈도우이름') / plt.show()
+
+- 플로팅 화면에 작은 이미지 화면 띄우기
+    메소드 원형 => plt.subplot(플롯행수, 플롯열수, 행열인덱스)
+    plt.subplot을 이용해 서브플롯의 위치를 잡아준 후 plt.imshow를 통해 이미지를 띄워준다.
+    이후 plt.title, plt.xticks, plt.yticks를 수행한 후 plt.show를 해야 한다.
 
 
 ####################################################################################################
