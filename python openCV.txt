@@ -32,17 +32,17 @@
 - 이미지 화면에 띄우기
     메소드 원형 => cv2.imshow('윈도우이름', 이미지객체)
 
-- 사용자의 키보드 입력 대기
+- 사용자의 키보드 입력 대기하기
     메소드 원형 => cv2.waitKey(MSEC) [입력 키보드값(32bit)]
     MSEC => 지정된 ms동안 키보드 입력을 대기 / 0이면 무한 대기
     64bit OS일 때의 반환값 얻기 => 반환값 & 0xFF
     문자의 아스키 코드값 얻기 => ord('문자')
     아스키 코드값의 문자 얻기 => chr(ASCII)
 
-- 생성한 화면 모두 제거
+- 생성한 화면 모두 제거하기
     메소드 원형 => cv2.destroyAllWindows()
 
-- 크기를 변경시킬 수 있는 창 지정
+- 크기를 변경시킬 수 있는 창 지정하기
     메소드 원형 => cv2.namedWindow('윈도우이름', MODE)
     MODE 종류
         # cv2.WINDOW_AUTOSIZE(default) - 원본 이미지 크기로 고정해 생성
@@ -62,7 +62,7 @@
 - 동영상의 프레임 얻기
     메소드 원형 => 동영상객체.read() [성공플래그, 이미지객체(프레임)]
 
-- 이미지 색상 변경
+- 이미지 색상 변경하기
     메소드 원형 => cv2.cvtColor(이미지객체, MODE)
     MODE 종류
         # cv2.COLOR_BGR2GRAY - BGR이미지를 흑백으로 변환
@@ -80,7 +80,7 @@
         # cv2.CV_CAP_PROP_FOURCC(6) - 동영상 코덱을 길이 4의 문자로 반환
         # cv2.CV_CAP_PROP_FRAME_COUNT(7) - 동영상의 전체 프레임 개수를 반환
 
-- 동영상 저장할 객체 생성
+- 동영상 저장할 객체 생성하기
     메소드 원형 => cv2.VideoWriter('저장경로', 코덱객체, FPS, (너비, 높이)) [동영상저장객체]
     코덱객체 얻기 => cv2.VideoWriter_fourcc('문자1', '문자2', '문자3', '문자4') [코덱객체]
     코덱 종류 => DIVX, XVID, MJPG, X264, WMV1, WMV2
@@ -114,7 +114,7 @@
             cv2.EVENT_LBUTTONUP : 왼쪽 마우스 누름 해제
         # param - cv2.setMouseCallback에서 전달받은 사용자 데이터
 
-- 트랙바 생성
+- 트랙바 생성하기
     메소드 원형 => cv2.createTrackbar('트랙바이름', '윈도우이름', 시작값, 끝값, 처리함수)
     윈도우이름은 먼저 cv2.namedWindow로 만든 후 사용해야 한다.
 
@@ -142,7 +142,7 @@
     mask의 값이 0이 아닌 부분만 이미지객체들을 가지고 연산한다.
     mask는 1채널 값이어야 하므로 대부분 흑백 이미지이다.
 
-- 이미지의 특정 색상만 추출할 마스크 생성
+- 이미지의 특정 색상만 추출할 마스크 생성하기
     메소드 원형 => cv2.inRange(HSV이미지객체, 범위하한, 범위상한) [마스크객체]
     HSV이미지객체는 cv2.cvtColor를 사용하여 생성한다.
     범위는 np.array를 사용하여 생성한다.
@@ -213,6 +213,72 @@
     변환행렬 => cv2.getPerspectiveTransform을 사용해 생성한다.
     출력크기 => (너비, 높이) 형식의 튜플 인자
 
+- 이미지에 2D 필터링 처리하기
+    메소드 원형 => cv2.filter2D(이미지객체, -1, 필터행렬) [이미지객체]
+    필터행렬 => np.ones를 사용해 생성한다.
+
+- 이미지에 블러링 처리하기
+    메소드 원형
+        # cv2.blur(이미지객체, 필터크기) [이미지객체] // Averaging Blur
+        # cv2.GaussianBlur(이미지객체, 필터크기, SIGMAX) [이미지객체] // Gaussian Blur
+        # cv2.medianBlur(이미지객체, 필터길이) [이미지객체] // Median Blur
+    필터크기 => (너비, 높이) 형식의 튜플 인자 / 두 값이 달라도 되지만 양의 홀수여야 한다.
+    SIGMAX => 기본으로 0을 준다. / SIGMAY 값은 자동으로 0으로 설정된다.
+    Gaussian Blur는 이미지의 가우스 노이즈를 제거하는데 효과적이다.
+    Median Blur는 이미지의 소금후추 노이즈를 제거하는데 효과적이다.
+    블러링 메소드 사용 시에는 try except 구문으로 묶어줘야 한다. 
+
+- 이미지의 엣지를 보존하는 필터링 처리하기
+    메소드 원형 => cv2.bilateralFilter(이미지객체, 9, 75, 75) [이미지객체]
+    Gaussian 필터를 이용하지만 픽셀의 강도 차이를 고려한 또 하나의 Gaussian 필터를 적용한다.
+    따라서 엣지를 보존하고 표면의 질감 등을 제거하는데 효과적이지만 성능적으로 느리다.
+
+- 이미지 형태 침식(Erosion)시키기
+    메소드 원형 => cv2.erode(이미지객체, 커널행렬, iterations=ITER) [이미지객체]
+    커널행렬 => np.ones를 사용해 생성한다.
+    ITER => Erosion 반복 횟수 / default = 1
+    흑백 이미지를 이용해 픽셀값이 1인 부분을 가늘게 만든다.
+
+- 이미지 형태 팽창(Dilation)시키기
+    메소드 원형 => cv2.dilate(이미지객체, 커널행렬, iterations=ITER) [이미지객체]
+    커널행렬 => np.ones를 사용해 생성한다.
+    ITER => Dilation 반복 횟수 / default = 1
+    흑백 이미지를 이용해 픽셀값이 1인 부분을 두껍게 만든다.
+
+- 이미지 형태변환으로 노이즈 제거하기
+    메소드 원형 => cv2.morphologyEx(이미지객체, MODE, 커널행렬) [이미지객체]
+    MODE 종류
+        # cv2.MORPH_OPEN - Opening을 수행 / Erosion 수행 후 Dilation 수행
+        # cv2.MORPH_CLOSE - Closing을 수행  / Dilation 수행 후 Erosion 수행
+        # cv2.MORPH_GRADIENT - Dilation 이미지와 Erosion 이미지의 차이를 나타냄
+        # cv2.MORPH_TOPHAT - 원본 이미지와 Opening 이미지의 차이를 나타냄
+        # cv2.MORPH_BLACKHAT - 원본 이미지와 Closing 이미지의 차이를 나타냄
+    커널행렬 => np.ones를 사용해 생성한다.
+
+- 커널행렬 생성하기
+    메소드 원형 => cv2.getStructuringElement(MODE, 커널크기) [커널행렬]
+    MODE 종류
+        # cv2.MORPH_RECT - 사각형 모양으로 행렬을 생성
+        # cv2.MORPH_ELLIPSE - 타원 모양으로 행렬을 생성
+        # cv2.MORPH_CROSS - 십자 모양으로 행렬을 생성
+    커널크기 => (너비, 높이) 형식의 튜플 인자
+
+- 이미지에 Sobel, Sharr 미분으로 엣지 찾아내기
+    메소드 원형 => cv2.Sobel(이미지객체, MODE, DX, DY, ksize=커널길이) [이미지객체]
+    MODE 종류
+        # cv2.CV_8U - 결과 이미지 픽셀값이 uint8이 된다.
+        # cv2.CV_16U - 결과 이미지 픽셀값이 uint16이 된다.
+        # cv2.CV_32F - 결과 이미지 픽셀값이 float32가 된다.
+        # cv2.CV_64F - 결과 이미지 픽셀값이 float64가 된다.
+    DX, DY => 가로방향, 세로방향의 미분 차수를 int형으로 지정 
+    커널길이 => Sobel 커널의 크기로 1, 3, 5, 7 중 하나로 설정 / -1이면 3 * 3 Scharr 커널로 적용
+    가우스 스무딩과 미분연산을 결합한 연산을 수행해 노이즈에 강력한 저항성이 있다.
+
+- 이미지에 Laplacian 미분으로 엣지 찾아내기
+    메소드 원형 => cv2.Laplacian(이미지객체, MODE) [이미지객체]
+    MODE 종류 => cv2.Sobel과 똑같다.
+    Sobel 알고리즘의 X방향 편미분 결과와 Y방향 편미분 결과를 더한 형태가 결과가 된다.    
+
 
 ####################################################################################################
 
@@ -252,6 +318,9 @@
 - 행렬 만들기
     이동 변환행렬 생성 => np.float32([[1, 0, X이동], [0, 1, Y이동]])
     원근 점행렬 생성 => np.float32([[X1, Y1], [X2, Y2], ..., [Xn, Yn]])
+    평균 필터행렬 생성 => np.ones((N, N), np.float32) / N*N
+    형태변환 커널행렬 생성 => np.ones((N, N), np.uint8)
+
 
 ####################################################################################################
 
